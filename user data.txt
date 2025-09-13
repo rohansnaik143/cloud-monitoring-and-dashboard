@@ -1,0 +1,214 @@
+#!/bin/bash
+# Basic web app with full website deployment
+yum update -y
+yum install -y httpd
+systemctl enable httpd
+systemctl start httpd
+
+# write your website (single file with HTML, CSS, and JS)
+cat > /var/www/html/index.html <<'EOF'
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Modern Tech Solutions</title>
+  <style>
+    :root {
+      --primary: #2c3e50;
+      --secondary: #3498db;
+      --accent: #e74c3c;
+      --light: #ecf0f1;
+      --dark: #2c3e50;
+      --shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    * {margin:0;padding:0;box-sizing:border-box;}
+    body {
+      font-family: 'Poppins', sans-serif;
+      line-height: 1.6;
+      color: var(--dark);
+      background-color: #fff;
+    }
+    .navbar {
+      display:flex;justify-content:space-between;align-items:center;
+      padding:1rem 5%;background:var(--primary);color:white;
+      position:sticky;top:0;z-index:100;box-shadow:var(--shadow);
+    }
+    .logo {font-size:1.5rem;font-weight:700;}
+    .nav-links {display:flex;list-style:none;}
+    .nav-links li {margin-left:2rem;}
+    .nav-links a {color:white;text-decoration:none;transition:color .3s;}
+    .nav-links a:hover {color:var(--secondary);}
+    .menu-toggle {display:none;font-size:1.8rem;cursor:pointer;}
+    .hero {
+      height:90vh;display:flex;align-items:center;justify-content:center;
+      text-align:center;color:white;
+      background:linear-gradient(rgba(44,62,80,.8),rgba(44,62,80,.8)),
+        url('https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=1950&q=80')
+        no-repeat center/cover;
+    }
+    .hero-content {max-width:800px;animation:fadeInUp 1.5s ease;}
+    .hero h1 {font-size:3.5rem;margin-bottom:1rem;font-weight:700;}
+    .hero p {font-size:1.2rem;margin-bottom:2rem;}
+    .cta-button {
+      background:var(--secondary);color:white;border:none;
+      padding:12px 30px;font-size:1rem;border-radius:50px;
+      cursor:pointer;font-weight:600;transition:.3s;
+    }
+    .cta-button:hover {background:#2980b9;transform:translateY(-3px);}
+    @keyframes fadeInUp {from{opacity:0;transform:translateY(30px);}to{opacity:1;transform:translateY(0);}}
+    .services,.about,.contact {padding:5rem 5%;}
+    .services {background:var(--light);}
+    .services h2,.about h2,.contact h2 {text-align:center;font-size:2.5rem;margin-bottom:3rem;color:var(--primary);}
+    .service-cards {
+      display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+      gap:2rem;
+    }
+    .card {
+      background:white;border-radius:10px;padding:2rem;text-align:center;
+      box-shadow:var(--shadow);transition:.3s;
+    }
+    .card:hover {transform:translateY(-10px);}
+    .card-icon {font-size:3rem;margin-bottom:1rem;}
+    .about {text-align:center;}
+    .about-content {max-width:800px;margin:auto;}
+    .contact {background:var(--light);}
+    .contact-form {max-width:600px;margin:auto;display:flex;flex-direction:column;}
+    .contact-form input,.contact-form textarea {
+      margin-bottom:1.5rem;padding:12px;border:1px solid #ddd;border-radius:5px;font-family:inherit;
+    }
+    .contact-form input:focus,.contact-form textarea:focus {
+      outline:none;border-color:var(--secondary);
+      box-shadow:0 0 5px rgba(52,152,219,.5);
+    }
+    .contact-form button {
+      background:var(--secondary);color:white;border:none;padding:12px;
+      border-radius:5px;cursor:pointer;font-size:1rem;transition:.3s;
+    }
+    .contact-form button:hover {background:#2980b9;}
+    footer {background:var(--primary);color:white;text-align:center;padding:2rem;}
+    .back-to-top {
+      position:fixed;bottom:20px;right:20px;
+      background:var(--secondary);color:white;
+      padding:10px 15px;border-radius:50%;cursor:pointer;
+      display:none;box-shadow:var(--shadow);
+    }
+    @media(max-width:768px){
+      .nav-links{display:none;flex-direction:column;background:var(--primary);position:absolute;top:60px;right:0;width:200px;}
+      .nav-links.active{display:flex;}
+      .menu-toggle{display:block;}
+      .hero h1{font-size:2.5rem;}
+    }
+    .dark-mode{background:#1c1c1c;color:#eee;}
+    .dark-mode .navbar,.dark-mode footer{background:#111;}
+  </style>
+</head>
+<body>
+  <header>
+    <nav class="navbar">
+      <div class="logo">TechSolutions</div>
+      <div class="menu-toggle">☰</div>
+      <ul class="nav-links">
+        <li><a href="#home">Home</a></li>
+        <li><a href="#services">Services</a></li>
+        <li><a href="#about">About</a></li>
+        <li><a href="#contact">Contact</a></li>
+        <li><button id="theme-toggle" style="background:none;border:none;color:white;cursor:pointer;">🌙</button></li>
+      </ul>
+    </nav>
+  </header>
+  <main>
+    <section id="home" class="hero">
+      <div class="hero-content">
+        <h1>Transform Your Business</h1>
+        <p>Cutting-edge technology solutions for modern enterprises</p>
+        <button class="cta-button">Get Started</button>
+      </div>
+    </section>
+    <section id="services" class="services">
+      <h2>Our Services</h2>
+      <div class="service-cards">
+        <div class="card"><div class="card-icon">🚀</div><h3>Cloud Solutions</h3><p>Scalable cloud infrastructure</p></div>
+        <div class="card"><div class="card-icon">🔒</div><h3>Cybersecurity</h3><p>Enterprise-grade protection</p></div>
+        <div class="card"><div class="card-icon">📊</div><h3>Data Analytics</h3><p>Actionable business insights</p></div>
+      </div>
+    </section>
+    <section id="about" class="about">
+      <div class="about-content">
+        <h2>About Us</h2>
+        <p>We empower businesses with innovative technology solutions since 2010. Our team of experts delivers cutting-edge services tailored to your needs.</p>
+      </div>
+    </section>
+    <section id="contact" class="contact">
+      <h2>Contact Us</h2>
+      <form class="contact-form">
+        <input type="text" placeholder="Your Name" required>
+        <input type="email" placeholder="Your Email" required>
+        <textarea placeholder="Your Message" rows="5" required></textarea>
+        <button type="submit">Send Message</button>
+      </form>
+      <p id="form-response" style="text-align:center;color:green;font-weight:600;display:none;">Thank you! We will contact you soon.</p>
+    </section>
+  </main>
+  <footer>
+    <p>&copy; 2025 TechSolutions. All rights reserved.</p>
+  </footer>
+  <div class="back-to-top">↑</div>
+  <script>
+    // Contact form handler
+    document.querySelector('.contact-form').addEventListener('submit', e=>{
+      e.preventDefault();
+      document.getElementById('form-response').style.display='block';
+      e.target.reset();
+    });
+    // Smooth scroll
+    document.querySelectorAll('a[href^="#"]').forEach(anchor=>{
+      anchor.addEventListener('click',e=>{
+        e.preventDefault();
+        document.querySelector(anchor.getAttribute('href')).scrollIntoView({behavior:'smooth'});
+      });
+    });
+    // Mobile menu toggle
+    document.querySelector('.menu-toggle').addEventListener('click',()=>{
+      document.querySelector('.nav-links').classList.toggle('active');
+    });
+    // Dark mode toggle
+    document.querySelector('#theme-toggle').addEventListener('click',()=>{
+      document.body.classList.toggle('dark-mode');
+    });
+    // Back to top
+    const backToTop=document.querySelector('.back-to-top');
+    window.addEventListener('scroll',()=>{
+      if(window.scrollY>200){backToTop.style.display='block';}
+      else{backToTop.style.display='none';}
+    });
+    backToTop.addEventListener('click',()=>window.scrollTo({top:0,behavior:'smooth'}));
+  </script>
+</body>
+</html>
+EOF
+
+# Install CloudWatch agent (Amazon Linux 2)
+yum install -y amazon-cloudwatch-agent
+
+# CloudWatch config
+cat > /opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json <<'EOF'
+{
+  "agent": {
+    "metrics_collection_interval": 60,
+    "run_as_user": "root"
+  },
+  "metrics": {
+    "namespace": "CWAgent",
+    "append_dimensions": {"InstanceId": "${aws:InstanceId}"},
+    "metrics_collected": {
+      "mem": {"measurement": ["mem_used_percent"],"metrics_collection_interval": 60},
+      "swap": {"measurement": ["swap_used_percent"],"metrics_collection_interval": 60}
+    }
+  }
+}
+EOF
+
+# Start CloudWatch agent
+/opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 \
+ -c file:/opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json -s
